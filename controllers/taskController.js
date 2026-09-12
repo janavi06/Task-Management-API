@@ -4,16 +4,22 @@ const { getAllTasks, getTaskById, createTask, updateTask, deleteTask } = require
 
 const getTasks = async (request,response) => {
 
+    const userId = request.user.userId;
     const sort = request.query.sort;
+    const limit = Number(request.query.limit) || 10;
+    const offset = Number(request.query.offset) || 0;
 
-    const tasks = await getAllTasks(sort);
+    const tasks = await getAllTasks(sort, limit, offset);
     response.send(tasks);
 };
+// IDOR(insecure direct object refrence) problem
 
 const getTask = async (request, response) => {
     const id = Number(request.params.id);
+    const userId = request.user.userId;
 
-    const tasks = await getTaskById(id);
+    const tasks = await getTaskById(userId, id);
+
 
     if (tasks.length === 0) {
         response.status(404).json({
@@ -26,16 +32,17 @@ const getTask = async (request, response) => {
 
 const createTaskController = async (request, response) => {
     const title = request.body.title;
-
-    const task = await createTask(title);
+    const userId = request.user.userId;
+    const task = await createTask(userId, title);
     response.status(201).send(task);
 }
 
 const updateTaskController = async (request,response) => {
     const id = Number(request.params.id);
     const title = request.body.title;
+    const user = request.user.userId;
     
-    const task = await updateTask(id, title);
+    const task = await updateTask(userId, id, title);
 
 
      if (task === undefined) {
@@ -49,8 +56,9 @@ const updateTaskController = async (request,response) => {
 
 const deleteTaskController = async (request, response) => {
     const id = Number(request.params.id);
+    const user = request.user.userId;
 
-    const task = await deleteTask(id);
+    const task = await deleteTask(userId,id);
 
     if (task === undefined) {
         response.status(404).json({

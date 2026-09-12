@@ -8,20 +8,21 @@ const {getTasks, getTask,
 } = require("../controllers/taskController");
 
 const validateTask = require("../middleware/validateTask");
+const authenticate = require("../middleware/authMiddleware");
 
 
-router.get("/tasks", getTasks);
+router.get("/tasks", authenticate, getTasks);
 
 
-router.get("/tasks/:id", getTask);
+router.get("/tasks/:id", authenticate, getTask);
 
 
-router.post("/tasks", validateTask, createTaskController);
+router.post("/tasks",authenticate, validateTask, createTaskController);
 
 
-router.patch("/tasks/:id", validateTask, updateTaskController );
+router.patch("/tasks/:id", authenticate, validateTask, updateTaskController );
 
-router.delete("/tasks/:id", deleteTaskController);
+router.delete("/tasks/:id",authenticate, deleteTaskController);
 
 
 module.exports = router;
